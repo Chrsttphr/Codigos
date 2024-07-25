@@ -1,0 +1,38 @@
+Function CPFNJ(n As Variant) As String
+    Dim str As String
+    
+    ' Converte o valor para texto
+    On Error GoTo ErrorHandler
+    str = CStr(n)
+    
+    ' Remove quaisquer caracteres não numéricos
+    str = Replace(str, " ", "")
+    str = Replace(str, "-", "")
+    str = Replace(str, ".", "")
+    str = Replace(str, "/", "")
+    
+    ' Adiciona um zero à esquerda se o número tiver 10 ou 13 dígitos
+    Select Case Len(str)
+        Case 10
+            str = "0" & str ' Adiciona um zero à esquerda para CPF
+        Case 13
+            str = "0" & str ' Adiciona um zero à esquerda para CNPJ
+    End Select
+    
+    ' Formata o texto de acordo com o número de dígitos
+    Select Case Len(str)
+        Case 11
+            ' Formata como CPF
+            CPFNJ = Format$(str, "000\.000\.000\-00")
+        Case 14
+            ' Formata como CNPJ
+            CPFNJ = Format$(str, "00\.000\.000\/0000\-00")
+        Case Else
+            CPFNJ = "Inválido" ' Retorna um texto indicando que o documento é inválido
+    End Select
+    
+    Exit Function
+
+ErrorHandler:
+    CPFNJ = "Erro: " & Err.Description
+End Function
