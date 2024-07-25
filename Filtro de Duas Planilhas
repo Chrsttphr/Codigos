@@ -1,0 +1,63 @@
+Sub SincronizarFiltros()
+    Dim ws As Worksheet
+    Dim tblBloco As ListObject
+    Dim tblDescricao As ListObject
+    Dim filtroBloco As String
+    Dim campoFiltro As Integer
+    Dim nomePlanilha As String
+    Dim nomeColunaComum As String
+
+    ' Defina o nome da planilha onde estão as tabelas
+    nomePlanilha = "LEGENDA" ' Nome da sua planilha
+
+    ' Tente definir a planilha
+    On Error Resume Next
+    Set ws = ThisWorkbook.Sheets(nomePlanilha)
+    On Error GoTo 0
+
+    ' Verifique se a planilha foi definida corretamente
+    If ws Is Nothing Then
+        MsgBox "A planilha '" & nomePlanilha & "' não foi encontrada.", vbCritical
+        Exit Sub
+    End If
+
+    ' Defina as tabelas
+    On Error Resume Next
+    Set tblBloco = ws.ListObjects("BLOCO")
+    Set tblDescricao = ws.ListObjects("DESCRIÇÃO")
+    On Error GoTo 0
+
+    ' Verifique se as tabelas foram definidas corretamente
+    If tblBloco Is Nothing Or tblDescricao Is Nothing Then
+        MsgBox "Uma ou ambas as tabelas não foram encontradas na planilha.", vbCritical
+        Exit Sub
+    End If
+
+    ' Verifique se o filtro está ativado na tabela BLOCO
+    On Error Resume Next
+    filtroBloco = tblBloco.AutoFilter.Filters(1).Criteria1
+    On Error GoTo 0
+
+    ' Remove filtros existentes da tabela DESCRIÇÃO
+    If tblDescricao.AutoFilter.FilterMode Then
+        tblDescricao.AutoFilter.ShowAllData
+    End If
+
+    ' Verifique se o filtro está aplicado
+    If filtroBloco <> "" Then
+        ' Nome da coluna comum na tabela DESCRIÇÃO
+        nomeColunaComum = "Coluna1" ' Substitua pelo nome real da coluna comum
+        
+        ' Verifique se a coluna comum existe na tabela DESCRIÇÃO
+        On Error Resume Next
+        campoFiltro = tblDescricao.ListColumns(nomeColunaComum).Index
+        On Error GoTo 0
+        
+        If campoFiltro > 0 Then
+            ' Aplica o filtro na tabela DESCRIÇÃO com base no filtro da tabela BLOCO
+            tblDescricao.Range.AutoFilter Field:=campoFiltro, Criteria1:=filtroBloco
+        Else
+            MsgBox "A coluna '" & nomeColunaComum & "' não foi encontrada na tabela DESCRIÇÃO.", vbCritical
+        End If
+    End If
+End Sub
