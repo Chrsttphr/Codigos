@@ -11,12 +11,17 @@ Function CPFNJ(n As Variant) As String
     str = Replace(str, ".", "")
     str = Replace(str, "/", "")
     
-    ' Adiciona um zero à esquerda se o número tiver 10 ou 13 dígitos
+    ' Adiciona zeros à esquerda conforme o número de dígitos
     Select Case Len(str)
-        Case 10
-            str = "0" & str ' Adiciona um zero à esquerda para CPF
-        Case 13
-            str = "0" & str ' Adiciona um zero à esquerda para CNPJ
+        Case Is <= 11
+            ' Adiciona zeros à esquerda para CPF
+            str = String(11 - Len(str), "0") & str
+        Case Is <= 14
+            ' Adiciona zeros à esquerda para CNPJ
+            str = String(14 - Len(str), "0") & str
+        Case Else
+            CPFNJ = "Inválido" ' Retorna um texto indicando que o documento é inválido
+            Exit Function
     End Select
     
     ' Formata o texto de acordo com o número de dígitos
