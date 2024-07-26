@@ -1,0 +1,41 @@
+Sub AnalisarDatas()
+    Dim ws As Worksheet
+    Dim cell As Range
+    Dim dataCol As Range
+    Dim hoje As Date
+    
+    ' Definir a planilha ativa
+    Set ws = ActiveSheet
+    
+    ' Definir a coluna de datas (alterar conforme necessário, aqui está configurado para a coluna A)
+    Set dataCol = ws.Range("A2:A" & ws.Cells(ws.Rows.Count, "F").End(xlUp).Row)
+    
+    ' Obter a data de hoje
+    hoje = Date
+    
+    ' Limpar formatação anterior
+    dataCol.Interior.ColorIndex = xlNone
+    dataCol.Font.ColorIndex = xlAutomatic
+    
+    ' Loop através de cada célula na coluna de datas
+    For Each cell In dataCol
+        If IsDate(cell.Value) Then
+            Select Case cell.Value
+                Case Is < hoje
+                    ' Datas vencidas
+                    cell.Interior.Color = RGB(255, 0, 0) ' Vermelho
+                    cell.Font.Color = RGB(255, 255, 255) ' Branco
+                Case hoje + 1 To hoje + 7
+                    ' Datas prestes a vencer (nos próximos 7 dias)
+                    cell.Interior.Color = RGB(255, 255, 0) ' Amarelo
+                    cell.Font.Color = RGB(0, 0, 0) ' Preto
+                Case Is >= hoje
+                    ' Datas no prazo
+                    cell.Interior.Color = RGB(0, 255, 0) ' Verde
+                    cell.Font.Color = RGB(0, 0, 0) ' Preto
+            End Select
+        End If
+    Next cell
+    
+    MsgBox "Análise de datas concluída!", vbInformation
+End Sub
