@@ -30,9 +30,10 @@ Sub DistribuirArquivos()
     For Each arquivo In fs.GetFolder(pastaMestre).Files
         arquivoNome = fs.GetFileName(arquivo.Path)
         
+        ' Verifica os prefixos dos nomes dos arquivos
         If UCase(Left(arquivoNome, 2)) = "NF" Then
             fs.MoveFile arquivo.Path, pastaNF & arquivoNome
-        ElseIf UCase(Left(arquivoNome, 7)) = "BOLETO" Then
+        ElseIf UCase(Left(arquivoNome, 7)) = "BOLETO " Then ' Verifica "BOLETO " com espaço
             fs.MoveFile arquivo.Path, pastaBoleto & arquivoNome
         Else
             fs.MoveFile arquivo.Path, pastaOutro & arquivoNome
