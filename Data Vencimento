@@ -3,12 +3,32 @@ Sub AnalisarDatas()
     Dim cell As Range
     Dim dataCol As Range
     Dim hoje As Date
+    Dim ultimaLinha As Long
+    Dim colunaDatas As String
     
+    On Error GoTo Erro
+
     ' Definir a planilha ativa
     Set ws = ActiveSheet
     
-    ' Definir a coluna de datas (alterar conforme necessário, aqui está configurado para a coluna A)
-    Set dataCol = ws.Range("A2:A" & ws.Cells(ws.Rows.Count, "F").End(xlUp).Row)
+    ' Solicitar ao usuário a coluna de datas
+    colunaDatas = InputBox("Digite a letra da coluna que contém as datas (ex: A):", "Selecionar Coluna de Datas", "A")
+    If colunaDatas = "" Then
+        MsgBox "Nenhuma coluna foi selecionada. O código será encerrado.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Encontrar a última linha com dados na coluna especificada
+    ultimaLinha = ws.Cells(ws.Rows.Count, colunaDatas).End(xlUp).Row
+    
+    ' Verificar se há dados na coluna
+    If ultimaLinha < 2 Then
+        MsgBox "Não há dados suficientes na coluna selecionada.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Definir o intervalo de datas
+    Set dataCol = ws.Range(colunaDatas & "2:" & colunaDatas & ultimaLinha)
     
     ' Obter a data de hoje
     hoje = Date
@@ -20,16 +40,16 @@ Sub AnalisarDatas()
     ' Loop através de cada célula na coluna de datas
     For Each cell In dataCol
         If IsDate(cell.Value) Then
-            Select Case cell.Value
-                Case Is < hoje
+            Select Case True
+                Case cell.Value < hoje
                     ' Datas vencidas
                     cell.Interior.Color = RGB(255, 0, 0) ' Vermelho
                     cell.Font.Color = RGB(255, 255, 255) ' Branco
-                Case hoje + 1 To hoje + 7
+                Case cell.Value >= hoje + 1 And cell.Value <= hoje + 7
                     ' Datas prestes a vencer (nos próximos 7 dias)
                     cell.Interior.Color = RGB(255, 255, 0) ' Amarelo
                     cell.Font.Color = RGB(0, 0, 0) ' Preto
-                Case Is >= hoje
+                Case cell.Value >= hoje
                     ' Datas no prazo
                     cell.Interior.Color = RGB(0, 255, 0) ' Verde
                     cell.Font.Color = RGB(0, 0, 0) ' Preto
@@ -38,4 +58,8 @@ Sub AnalisarDatas()
     Next cell
     
     MsgBox "Análise de datas concluída!", vbInformation
+    Exit Sub
+    
+Erro:
+    MsgBox "Ocorreu um erro: " & Err.Description, vbCritical
 End Sub
