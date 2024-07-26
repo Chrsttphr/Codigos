@@ -1,0 +1,67 @@
+Sub CriarTabelaComHiperlinks()
+    Dim ws As Worksheet
+    Dim wsAtual As Worksheet
+    Dim i As Integer
+    Dim tabela As ListObject
+    Dim intervalo As Range
+    
+    ' Define a planilha atual
+    Set wsAtual = ActiveSheet
+
+    ' Remove a planilha "TabelaPlanilhas" se existir
+    On Error Resume Next
+    Application.DisplayAlerts = False
+    Sheets("TabelaPlanilhas").Delete
+    Application.DisplayAlerts = True
+    On Error GoTo 0
+
+    ' Adiciona cabeçalhos
+    wsAtual.Cells(1, 1).Value = "Nome da Planilha"
+    wsAtual.Cells(1, 2).Value = "Link"
+    
+    ' Preenche a tabela com nomes de planilhas e hiperlinks
+    i = 2
+    For Each ws In ThisWorkbook.Worksheets
+        If ws.Name <> wsAtual.Name Then
+            wsAtual.Cells(i, 1).Value = ws.Name
+            wsAtual.Hyperlinks.Add Anchor:=wsAtual.Cells(i, 2), Address:="", SubAddress:=ws.Name & "!A1", TextToDisplay:="Acessar"
+            i = i + 1
+        End If
+    Next ws
+
+    ' Define o intervalo para a tabela
+    Set intervalo = wsAtual.Range("A1:B" & i - 1)
+    
+    ' Remove tabela existente se houver
+    On Error Resume Next
+    For Each tabela In wsAtual.ListObjects
+        If Not Intersect(tabela.Range, intervalo) Is Nothing Then
+            tabela.Unlist
+        End If
+    Next tabela
+    On Error GoTo 0
+    
+    ' Cria a nova tabela
+    Set tabela = wsAtual.ListObjects.Add(xlSrcRange, intervalo, , xlYes)
+    tabela.Name = "TabelaPlanilhas"
+    tabela.TableStyle = "TableStyleLight1"
+    
+    ' Formata a tabela
+    With intervalo
+        .Font.Name = "Arial"
+        .Font.Size = 12
+        .HorizontalAlignment = xlCenter
+        .Borders(xlEdgeBottom).LineStyle = xlContinuous
+        .Borders(xlEdgeLeft).LineStyle = xlContinuous
+        .Borders(xlEdgeRight).LineStyle = xlContinuous
+        .Borders(xlEdgeTop).LineStyle = xlContinuous
+        .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+        .Borders(xlInsideVertical).LineStyle = xlContinuous
+    End With
+
+    ' Ajusta a largura das colunas
+    wsAtual.Columns("A:B").AutoFit
+    
+    ' Informa ao usuário
+    MsgBox "Tabela criada com sucesso!", vbInformation
+End Sub
