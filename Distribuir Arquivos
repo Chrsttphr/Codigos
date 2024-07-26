@@ -1,0 +1,43 @@
+Sub DistribuirArquivos()
+    Dim fs As Object
+    Dim pastaMestre As String
+    Dim pastaNF As String
+    Dim pastaBoleto As String
+    Dim pastaOutro As String
+    Dim arquivo As Object
+    Dim arquivoNome As String
+    
+    ' Defina as pastas aqui
+    pastaMestre = "C:\Users\Raphaela\Desktop\Sped\MESTRA\"   ' Caminho para a pasta mestre
+    pastaNF = "C:\Users\Raphaela\Desktop\Sped\NF\"           ' Caminho para a pasta NF
+    pastaBoleto = "C:\Users\Raphaela\Desktop\Sped\BOLETO\"   ' Caminho para a pasta Boleto
+    pastaOutro = "C:\Users\Raphaela\Desktop\Sped\RELATÓRIO\" ' Caminho para a pasta Outro
+
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    
+    ' Verifica se a pasta mestre existe
+    If Not fs.FolderExists(pastaMestre) Then
+        MsgBox "A pasta mestre não foi encontrada.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Verifica se as pastas de destino existem
+    If Not fs.FolderExists(pastaNF) Then fs.CreateFolder(pastaNF)
+    If Not fs.FolderExists(pastaBoleto) Then fs.CreateFolder(pastaBoleto)
+    If Not fs.FolderExists(pastaOutro) Then fs.CreateFolder(pastaOutro)
+    
+    ' Percorre todos os arquivos na pasta mestre
+    For Each arquivo In fs.GetFolder(pastaMestre).Files
+        arquivoNome = fs.GetFileName(arquivo.Path)
+        
+        If UCase(Left(arquivoNome, 2)) = "NF" Then
+            fs.MoveFile arquivo.Path, pastaNF & arquivoNome
+        ElseIf UCase(Left(arquivoNome, 7)) = "BOLETO" Then
+            fs.MoveFile arquivo.Path, pastaBoleto & arquivoNome
+        Else
+            fs.MoveFile arquivo.Path, pastaOutro & arquivoNome
+        End If
+    Next arquivo
+
+    MsgBox "Distribuição concluída.", vbInformation
+End Sub
