@@ -1,9 +1,37 @@
 Function CPFNJ(n As Variant) As String
     Dim str As String
+    Dim cpfPattern As String
+    Dim cnpjPattern As String
+    Dim regex As Object
+    
+    ' Padrões de regex para CPF e CNPJ formatados
+    cpfPattern = "^\d{3}\.\d{3}\.\d{3}-\d{2}$"
+    cnpjPattern = "^\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}$"
+    
+    ' Cria objeto regex
+    Set regex = CreateObject("VBScript.RegExp")
     
     ' Converte o valor para texto
     On Error GoTo ErrorHandler
     str = CStr(n)
+    
+    ' Verifica se o valor já está formatado como CPF
+    With regex
+        .Pattern = cpfPattern
+        If .Test(str) Then
+            CPFNJ = str
+            Exit Function
+        End If
+    End With
+    
+    ' Verifica se o valor já está formatado como CNPJ
+    With regex
+        .Pattern = cnpjPattern
+        If .Test(str) Then
+            CPFNJ = str
+            Exit Function
+        End If
+    End With
     
     ' Remove quaisquer caracteres não numéricos
     str = Replace(str, " ", "")
