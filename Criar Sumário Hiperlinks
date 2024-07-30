@@ -4,7 +4,10 @@ Sub CriarTabelaComHiperlinks()
     Dim i As Integer
     Dim tabela As ListObject
     Dim intervalo As Range
-    
+    Dim linkCell As Range
+    Dim hl As Hyperlink
+    Dim linkExists As Boolean
+
     ' Define a planilha atual
     Set wsAtual = ActiveSheet
 
@@ -25,6 +28,37 @@ Sub CriarTabelaComHiperlinks()
         If ws.Name <> wsAtual.Name Then
             wsAtual.Cells(i, 1).Value = ws.Name
             wsAtual.Hyperlinks.Add Anchor:=wsAtual.Cells(i, 2), Address:="", SubAddress:=ws.Name & "!A1", TextToDisplay:="Acessar"
+            wsAtual.Cells(i, 2).Font.ColorIndex = xlAutomatic
+            
+            ' Verifica e adiciona/atualiza hiperlink para voltar à tabela principal
+            linkExists = False
+            For Each hl In ws.Hyperlinks
+                If hl.TextToDisplay = "Voltar à Tabela Principal" Then
+                    hl.Delete
+                    linkExists = True
+                    Exit For
+                End If
+            Next hl
+            
+            ' Encontra a célula correta para o novo hiperlink
+            Set linkCell = ws.Range("A1")
+            Do While linkCell.Value <> "" And linkCell.Value <> "Voltar à Tabela Principal"
+                Set linkCell = linkCell.Offset(0, 1)
+            Loop
+            
+            ' Adiciona o hiperlink
+            ws.Hyperlinks.Add Anchor:=linkCell, Address:="", SubAddress:=wsAtual.Name & "!A1", TextToDisplay:="Voltar à Tabela Principal"
+            With linkCell
+                .Font.ColorIndex = xlAutomatic
+                .Font.Bold = True
+                .Interior.Color = RGB(211, 211, 211) ' Cinza claro
+                .HorizontalAlignment = xlCenter
+                .VerticalAlignment = xlCenter
+            End With
+            
+            ' Ajusta a largura da coluna onde o hiperlink foi adicionado
+            linkCell.EntireColumn.AutoFit
+
             i = i + 1
         End If
     Next ws
@@ -49,7 +83,7 @@ Sub CriarTabelaComHiperlinks()
     ' Formata a tabela
     With intervalo
         .Font.Name = "Arial"
-        .Font.Size = 12
+        .Font.Size = 15
         .HorizontalAlignment = xlCenter
         .Borders(xlEdgeBottom).LineStyle = xlContinuous
         .Borders(xlEdgeLeft).LineStyle = xlContinuous
@@ -62,6 +96,24 @@ Sub CriarTabelaComHiperlinks()
     ' Ajusta a largura das colunas
     wsAtual.Columns("A:B").AutoFit
     
+    ' Adiciona a borda externa espessa à tabela
+    With tabela.Range.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .Weight = xlThick
+    End With
+    With tabela.Range.Borders(xlEdgeLeft)
+        .LineStyle = xlContinuous
+        .Weight = xlThick
+    End With
+    With tabela.Range.Borders(xlEdgeRight)
+        .LineStyle = xlContinuous
+        .Weight = xlThick
+    End With
+    With tabela.Range.Borders(xlEdgeTop)
+        .LineStyle = xlContinuous
+        .Weight = xlThick
+    End With
+
     ' Informa ao usuário
     MsgBox "Tabela criada com sucesso!", vbInformation
 End Sub
