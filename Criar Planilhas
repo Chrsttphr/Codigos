@@ -1,0 +1,36 @@
+Sub CriarPlanilhasParaCidades()
+    Dim ws As Worksheet
+    Dim novaWs As Worksheet
+    Dim ultimaLinha As Long
+    Dim i As Long
+    Dim nomeCidade As String
+    Dim existente As Boolean
+
+    ' Defina a planilha onde estão os nomes das cidades
+    Set ws = ThisWorkbook.Sheets("NomeDaSuaPlanilha") ' Altere para o nome da sua planilha
+
+    ' Encontre a última linha na coluna A (altere se necessário)
+    ultimaLinha = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    ' Loop para cada nome de cidade na coluna A
+    For i = 1 To ultimaLinha
+        nomeCidade = ws.Cells(i, 1).Value
+
+        ' Verifica se a planilha já existe
+        existente = False
+        For Each novaWs In ThisWorkbook.Worksheets
+            If novaWs.Name = nomeCidade Then
+                existente = True
+                Exit For
+            End If
+        Next novaWs
+
+        ' Se a planilha não existir, cria uma nova
+        If Not existente Then
+            Set novaWs = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+            novaWs.Name = nomeCidade
+        End If
+    Next i
+
+    MsgBox "Planilhas criadas com sucesso!"
+End Sub
