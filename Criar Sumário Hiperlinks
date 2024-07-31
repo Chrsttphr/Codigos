@@ -27,7 +27,8 @@ Sub CriarTabelaComHiperlinks()
     For Each ws In ThisWorkbook.Worksheets
         If ws.Name <> wsAtual.Name Then
             wsAtual.Cells(i, 1).Value = ws.Name
-            wsAtual.Hyperlinks.Add Anchor:=wsAtual.Cells(i, 2), Address:="", SubAddress:=ws.Name & "!A1", TextToDisplay:="Acessar"
+            ' Adiciona apóstrofos ao redor do nome da planilha no hiperlink
+            wsAtual.Hyperlinks.Add Anchor:=wsAtual.Cells(i, 2), Address:="", SubAddress:="'" & ws.Name & "'!A1", TextToDisplay:="Acessar"
             wsAtual.Cells(i, 2).Font.ColorIndex = xlAutomatic
             
             ' Verifica e adiciona/atualiza hiperlink para voltar à tabela principal
@@ -47,7 +48,7 @@ Sub CriarTabelaComHiperlinks()
             Loop
             
             ' Adiciona o hiperlink
-            ws.Hyperlinks.Add Anchor:=linkCell, Address:="", SubAddress:=wsAtual.Name & "!A1", TextToDisplay:="Voltar à Tabela Principal"
+            ws.Hyperlinks.Add Anchor:=linkCell, Address:="", SubAddress:="'" & wsAtual.Name & "'!A1", TextToDisplay:="Voltar à Tabela Principal"
             With linkCell
                 .Font.ColorIndex = xlAutomatic
                 .Font.Bold = True
