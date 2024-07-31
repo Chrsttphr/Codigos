@@ -1,0 +1,34 @@
+Sub CriarPastas()
+    Dim ws As Worksheet
+    Dim pastaBase As String
+    Dim celula As Range
+    Dim ultimaLinha As Long
+    Dim novaPasta As String
+    
+    ' Defina a planilha onde está a lista de pastas
+    Set ws = ThisWorkbook.Sheets("HiperLink")
+    
+    ' Defina a pasta base onde as novas pastas serão criadas
+    pastaBase = "\\192.168.1.251\Arquivos\Colaboradores\CHRISTOPHER\"
+    
+    ' Encontre a última linha preenchida na coluna A
+    ultimaLinha = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    
+    ' Iterar sobre cada célula da coluna A
+    For Each celula In ws.Range("A4:A" & ultimaLinha)
+        novaPasta = pastaBase & celula.Value
+        ' Verificar se a pasta já existe
+        If Dir(novaPasta, vbDirectory) = "" Then
+            ' Se não existir, criar a pasta
+            On Error Resume Next
+            MkDir novaPasta
+            If Err.Number <> 0 Then
+                MsgBox "Erro ao criar a pasta: " & novaPasta & vbCrLf & Err.Description
+                Err.Clear
+            End If
+            On Error GoTo 0
+        End If
+    Next celula
+    
+    MsgBox "Processo concluído!"
+End Sub
