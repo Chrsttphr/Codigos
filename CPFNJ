@@ -38,6 +38,7 @@ Function CPFNJ(n As Variant) As String
     str = Replace(str, "-", "")
     str = Replace(str, ".", "")
     str = Replace(str, "/", "")
+    str = Replace(str, ",", "")
     
     ' Adiciona zeros à esquerda conforme o número de dígitos
     Select Case Len(str)
@@ -69,3 +70,27 @@ Function CPFNJ(n As Variant) As String
 ErrorHandler:
     CPFNJ = "Erro: " & Err.Description
 End Function
+
+Sub AplicarCPFNJ()
+    Dim rng As Range
+    Dim cell As Range
+    
+    ' Solicita ao usuário para selecionar o intervalo
+    On Error Resume Next
+    Set rng = Application.InputBox("Selecione o intervalo onde deseja aplicar a fórmula CPFNJ:", Type:=8)
+    On Error GoTo 0
+    
+    If rng Is Nothing Then
+        MsgBox "Nenhum intervalo selecionado.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Percorre cada célula no intervalo e aplica a função CPFNJ
+    Application.ScreenUpdating = False
+    For Each cell In rng
+        cell.Value = CPFNJ(cell.Value)
+    Next cell
+    Application.ScreenUpdating = True
+    
+    MsgBox "Fórmula CPFNJ aplicada com sucesso!", vbInformation
+End Sub
