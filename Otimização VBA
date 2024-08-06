@@ -6,11 +6,7 @@ Sub ApplyAllOptimizations()
 
     ' Chama as sub-rotinas de otimização
     RemoveEmptyRowsAndColumns
-    ClearFormatting
     RemoveNamedRanges
-
-    ' Salva o arquivo no formato binário
-    SaveAsBinary
 
     ' Reativa o cálculo automático, alertas e a atualização de tela
     Application.Calculation = xlCalculationAutomatic
@@ -29,31 +25,24 @@ Sub RemoveEmptyRowsAndColumns()
         ' Encontrar a última coluna com dados
         lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
         
-        ' Apagar linhas e colunas vazias
-        ws.Range(ws.Cells(lastRow + 1, 1), ws.Cells(ws.Rows.Count, 1)).EntireRow.Delete
-        ws.Range(ws.Cells(1, lastCol + 1), ws.Cells(1, ws.Columns.Count)).EntireColumn.Delete
-    Next ws
-End Sub
-
-Sub ClearFormatting()
-    Dim ws As Worksheet
-    
-    For Each ws In ThisWorkbook.Worksheets
-        ws.Cells.ClearFormats
+        ' Apagar linhas vazias abaixo dos dados
+        If ws.Cells(lastRow + 1, 1).Row <= ws.Rows.Count Then
+            ws.Rows(lastRow + 1 & ":" & ws.Rows.Count).Delete
+        End If
+        
+        ' Apagar colunas vazias à direita dos dados
+        If ws.Cells(1, lastCol + 1).Column <= ws.Columns.Count Then
+            ws.Columns(lastCol + 1 & ":" & ws.Columns.Count).Delete
+        End If
     Next ws
 End Sub
 
 Sub RemoveNamedRanges()
     Dim nm As Name
     
+    On Error Resume Next
     For Each nm In ThisWorkbook.Names
         nm.Delete
     Next nm
-End Sub
-
-Sub SaveAsBinary()
-    Dim wb As Workbook
-    Set wb = ThisWorkbook
-    
-    wb.SaveAs Filename:=Left(wb.FullName, InStrRev(wb.FullName, ".") - 1) & ".xlsb", FileFormat:=xlExcel12
+    On Error GoTo 0
 End Sub
