@@ -1,0 +1,30 @@
+Sub FormatNumbersToFiveDigits()
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+
+    ' Definir a planilha e o intervalo da coluna que deseja formatar
+    Set ws = ThisWorkbook.Sheets("Nome da Planilha")
+    Set rng = ws.Range("A1:A675")
+
+    ' Melhorar a performance desativando a atualização da tela, eventos e recalculação
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    Application.Calculation = xlCalculationManual
+
+    ' Loop através de cada célula no intervalo
+    For Each cell In rng
+        ' Verificar se a célula não está vazia, é numérica e tem menos de 5 dígitos
+        If IsNumeric(cell.Value) And Len(cell.Value) < 5 Then
+            ' Formatar o valor da célula para 5 dígitos com zeros à esquerda
+            cell.Value = Format(cell.Value, "00000")
+        End If
+    Next cell
+
+    ' Reativar a atualização da tela, eventos e recalculação
+    Application.ScreenUpdating = True
+    Application.EnableEvents = True
+    Application.Calculation = xlCalculationAutomatic
+
+    MsgBox "Formatação concluída!"
+End Sub
