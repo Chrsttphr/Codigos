@@ -1,0 +1,59 @@
+Sub ApplyAllOptimizations()
+    ' Desativa a atualização de tela, alertas e cálculos automáticos
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    Application.Calculation = xlCalculationManual
+
+    ' Chama as sub-rotinas de otimização
+    RemoveEmptyRowsAndColumns
+    ClearFormatting
+    RemoveNamedRanges
+
+    ' Salva o arquivo no formato binário
+    SaveAsBinary
+
+    ' Reativa o cálculo automático, alertas e a atualização de tela
+    Application.Calculation = xlCalculationAutomatic
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+End Sub
+
+Sub RemoveEmptyRowsAndColumns()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCol As Long
+    
+    For Each ws In ThisWorkbook.Worksheets
+        ' Encontrar a última linha com dados
+        lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+        ' Encontrar a última coluna com dados
+        lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+        
+        ' Apagar linhas e colunas vazias
+        ws.Range(ws.Cells(lastRow + 1, 1), ws.Cells(ws.Rows.Count, 1)).EntireRow.Delete
+        ws.Range(ws.Cells(1, lastCol + 1), ws.Cells(1, ws.Columns.Count)).EntireColumn.Delete
+    Next ws
+End Sub
+
+Sub ClearFormatting()
+    Dim ws As Worksheet
+    
+    For Each ws In ThisWorkbook.Worksheets
+        ws.Cells.ClearFormats
+    Next ws
+End Sub
+
+Sub RemoveNamedRanges()
+    Dim nm As Name
+    
+    For Each nm In ThisWorkbook.Names
+        nm.Delete
+    Next nm
+End Sub
+
+Sub SaveAsBinary()
+    Dim wb As Workbook
+    Set wb = ThisWorkbook
+    
+    wb.SaveAs Filename:=Left(wb.FullName, InStrRev(wb.FullName, ".") - 1) & ".xlsb", FileFormat:=xlExcel12
+End Sub
