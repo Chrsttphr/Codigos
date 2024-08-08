@@ -1,0 +1,38 @@
+Sub AplicarFormatacaoCondicional()
+
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim lastRow As Long
+    Dim contador As Long
+    Dim intervalo As Range
+    Dim linha As Range
+
+    ' Defina a planilha e a coluna que você deseja formatar
+    Set ws = ThisWorkbook.Sheets("Controle")
+    Set intervalo = ws.Range("G3:G15000") ' Intervalo a ser verificado
+
+    ' Encontre a última linha preenchida na coluna G
+    lastRow = ws.Cells(ws.Rows.Count, "G").End(xlUp).Row
+    Set rng = ws.Range("G4:G" & lastRow)
+
+    ' Limpar quaisquer regras de formatação condicional existentes
+    ws.Range("A3:Y2001").FormatConditions.Delete
+
+    ' Aplicar a formatação condicional
+    For Each cell In rng
+        contador = Application.WorksheetFunction.CountIf(intervalo, cell.Value)
+        Set linha = ws.Range("A" & cell.Row & ":Y" & cell.Row)
+        
+        If contador <= 4 Then
+            ' Vermelho claro para 4 ou menos repetições
+            linha.Interior.Color = RGB(255, 182, 193) ' Vermelho claro
+        ElseIf contador >= 5 And contador <= 8 Then
+            ' Amarelo para 5 a 8 repetições
+            linha.Interior.Color = RGB(255, 255, 0) ' Amarelo
+        ElseIf contador >= 9 Then
+            ' Verde claro para 9 ou mais repetições
+            linha.Interior.Color = RGB(144, 238, 144) ' Verde claro
+        End If
+    Next cell
+End Sub
