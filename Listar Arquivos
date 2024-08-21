@@ -1,3 +1,5 @@
+OBS: =DATA(ANO(B3) + 1;MÊS(B3);DIA(B3)) ---- Somar 1 ano na data ao lado para vencimentos anuais
+
 Sub ListarArquivos()
     Dim ws As Worksheet
     Dim pasta As String
