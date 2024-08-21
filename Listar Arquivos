@@ -1,4 +1,8 @@
-OBS: =DATA(ANO(B3) + 1;MÊS(B3);DIA(B3)) ---- Somar 1 ano na data ao lado para vencimentos anuais
+OBS: 
+=DATA(ANO(B3) + 1;MÊS(B3);DIA(B3)) ---- Somar 1 ano na data ao lado para vencimentos anuais
+=SE(C2 < HOJE(); "Vencido"; SE(C2 <= HOJE() + 7; "Atenção"; "No Prazo")) ---------- Legenda
+
+
 
 Sub ListarArquivos()
     Dim ws As Worksheet
