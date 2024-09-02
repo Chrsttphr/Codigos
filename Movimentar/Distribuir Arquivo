@@ -1,0 +1,57 @@
+Sub DistribuirArquivoNasSubpastas()
+
+    Dim pastaPrincipal As String
+    Dim arquivoCaminho As String
+    Dim fso As Object
+    Dim pasta As Object
+    Dim subPastaNivel1 As Object
+    Dim subPastaNivel2 As Object
+    
+    ' Defina o caminho da pasta principal
+    pastaPrincipal = "C:\Caminho\Para\Sua\Pasta" ' Caminho da pasta principal
+    
+    ' Defina o caminho completo do arquivo a ser copiado
+    arquivoCaminho = pastaPrincipal & "\Arquivo a ser Distribuido"
+    
+    ' Verifica se o arquivo existe na pasta principal
+    If Dir(arquivoCaminho) = "" Then
+        MsgBox "O arquivo não foi encontrado na pasta principal."
+        Exit Sub
+    End If
+    
+    ' Cria o objeto FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Verifica se a pasta principal existe
+    If fso.FolderExists(pastaPrincipal) Then
+        ' Define a pasta principal
+        Set pasta = fso.GetFolder(pastaPrincipal)
+        
+        ' Loop pelo primeiro nível de subpastas
+        For Each subPastaNivel1 In pasta.SubFolders
+            ' Copia o arquivo para o primeiro nível de subpastas
+            If Not fso.FileExists(subPastaNivel1.Path & "\R.A - Antecipação ICMS.xlsx") Then
+                fso.CopyFile arquivoCaminho, subPastaNivel1.Path & "\"
+            End If
+            
+            ' Loop pelo segundo nível de subpastas
+            For Each subPastaNivel2 In subPastaNivel1.SubFolders
+                ' Copia o arquivo para o segundo nível de subpastas
+                If Not fso.FileExists(subPastaNivel2.Path & "\R.A - Antecipação ICMS.xlsx") Then
+                    fso.CopyFile arquivoCaminho, subPastaNivel2.Path & "\"
+                End If
+            Next subPastaNivel2
+        Next subPastaNivel1
+    Else
+        MsgBox "A pasta principal não foi encontrada."
+    End If
+    
+    ' Limpeza de memória
+    Set subPastaNivel2 = Nothing
+    Set subPastaNivel1 = Nothing
+    Set pasta = Nothing
+    Set fso = Nothing
+    
+    MsgBox "Arquivo copiado com sucesso para o primeiro e segundo níveis de subpastas!"
+
+End Sub
