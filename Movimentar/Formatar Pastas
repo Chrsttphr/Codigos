@@ -1,0 +1,40 @@
+Sub LimparSubpastas()
+
+    Dim pastaPrincipal As String
+    Dim fso As Object
+    Dim pasta As Object
+    Dim subPasta As Object
+    Dim arquivo As Object
+    
+    ' Defina o caminho da pasta principal
+    pastaPrincipal = "C:\Caminho\Para\Sua\Pasta" ' Substitua pelo caminho da pasta principal
+    
+    ' Cria o objeto FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Verifica se a pasta principal existe
+    If fso.FolderExists(pastaPrincipal) Then
+        ' Define a pasta principal
+        Set pasta = fso.GetFolder(pastaPrincipal)
+        
+        ' Loop pelas subpastas
+        For Each subPasta In pasta.SubFolders
+            ' Loop pelos arquivos dentro de cada subpasta
+            For Each arquivo In subPasta.Files
+                ' Remove o arquivo
+                arquivo.Delete
+            Next arquivo
+        Next subPasta
+    Else
+        MsgBox "A pasta principal não foi encontrada."
+    End If
+    
+    ' Limpeza de memória
+    Set arquivo = Nothing
+    Set subPasta = Nothing
+    Set pasta = Nothing
+    Set fso = Nothing
+    
+    MsgBox "Arquivos removidos com sucesso!"
+
+End Sub
