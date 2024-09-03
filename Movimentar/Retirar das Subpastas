@@ -1,0 +1,35 @@
+Sub MoverXMLParaPastaPrincipal()
+
+    Dim pastaPrincipal As String
+    Dim subPasta As Object
+    Dim arquivo As String
+    Dim fso As Object
+    Dim folder As Object
+    
+    ' Define o caminho da pasta principal
+    pastaPrincipal = "C:\Users\Precisao\Desktop\xml\"
+    
+    ' Inicializa o FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set folder = fso.GetFolder(pastaPrincipal)
+    
+    ' Percorre todas as subpastas da pasta principal
+    For Each subPasta In folder.SubFolders
+        ' Procura por arquivos XML em cada subpasta
+        arquivo = Dir(subPasta.Path & "\*.xml")
+        
+        Do While arquivo <> ""
+            ' Move o arquivo XML para a pasta principal
+            fso.MoveFile Source:=subPasta.Path & "\" & arquivo, Destination:=pastaPrincipal & "\" & arquivo
+            ' Procura o próximo arquivo XML
+            arquivo = Dir
+        Loop
+    Next subPasta
+    
+    ' Libera o objeto FileSystemObject
+    Set fso = Nothing
+    Set folder = Nothing
+    
+    MsgBox "Todos os arquivos XML foram movidos para a pasta principal.", vbInformation
+
+End Sub
