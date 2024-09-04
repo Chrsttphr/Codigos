@@ -1,0 +1,74 @@
+Sub RenomearArquivosNF()
+    Dim pastaOrigem As String
+    Dim fso As Object
+    Dim pasta As Object
+    Dim arquivo As Object
+    Dim nomeAtual As String
+    Dim novoNome As String
+    Dim numeroNF As String
+    Dim caminhoAtual As String
+    Dim caminhoNovo As String
+    
+    ' Definir o caminho da pasta onde os arquivos estão
+    pastaOrigem = "C:\Users\Raphaela\Desktop\Sped\NF\" ' Altere para o caminho da sua pasta
+    
+    ' Verificar se a pasta termina com "\"
+    If Right(pastaOrigem, 1) <> "\" Then
+        pastaOrigem = pastaOrigem & "\"
+    End If
+    
+    ' Criar objeto FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Atribuir a pasta a um objeto
+    Set pasta = fso.GetFolder(pastaOrigem)
+    
+    ' Loop através de todos os arquivos na pasta
+    For Each arquivo In pasta.Files
+        ' Verifica se o arquivo é um PDF
+        If LCase(fso.GetExtensionName(arquivo.Name)) = "pdf" Then
+            nomeAtual = arquivo.Name
+            
+            ' Verifica se o nome já foi renomeado duas vezes (ou seja, contém dois prefixos duplicados)
+            If InStr(nomeAtual, " - ") > 0 Then
+                ' Extrai o prefixo inicial
+                Dim prefixo1 As String
+                Dim posHifen As Long
+                posHifen = InStr(nomeAtual, " - ")
+                prefixo1 = Left(nomeAtual, posHifen - 1)
+                
+                ' Verifica se o prefixo aparece duas vezes no nome do arquivo
+                If InStr(posHifen + 3, nomeAtual, prefixo1 & " - ") > 0 Then
+                    ' Corrige o nome removendo o segundo prefixo duplicado e o hífen adicional
+                    novoNome = prefixo1 & Mid(nomeAtual, posHifen + Len(prefixo1) + 4)
+                    
+                    ' Constrói os caminhos completos
+                    caminhoAtual = pastaOrigem & nomeAtual
+                    caminhoNovo = pastaOrigem & novoNome
+                    
+                    ' Renomeia o arquivo
+                    Name caminhoAtual As caminhoNovo
+                End If
+            Else
+                ' Não foi renomeado ainda, realizar a renomeação
+                ' Verifica se o nome tem pelo menos 44 caracteres (para garantir que a estrutura do nome seja correta)
+                If Len(nomeAtual) >= 44 Then
+                    ' Extrai os 6 dígitos antes dos últimos 10 números
+                    numeroNF = Mid(nomeAtual, Len(nomeAtual) - 15, 6)
+                    
+                    ' Constrói o novo nome
+                    novoNome = numeroNF & " - " & nomeAtual
+                    
+                    ' Constrói os caminhos completos
+                    caminhoAtual = pastaOrigem & nomeAtual
+                    caminhoNovo = pastaOrigem & novoNome
+                    
+                    ' Renomeia o arquivo
+                    Name caminhoAtual As caminhoNovo
+                End If
+            End If
+        End If
+    Next arquivo
+    
+    MsgBox "Arquivos renomeados e corrigidos com sucesso!"
+End Sub
