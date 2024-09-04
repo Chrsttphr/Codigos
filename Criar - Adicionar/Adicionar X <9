@@ -1,0 +1,22 @@
+Sub MarcarCelulas()
+    Dim ws As Worksheet
+    Dim i As Long
+    Dim LastRow As Long
+
+    ' Definir a planilha ativa
+    Set ws = ActiveSheet
+    
+    ' Definir a última linha a ser verificada
+    LastRow = 15614
+    
+    ' Loop através de todas as células na coluna A3:A15614
+    For i = 3 To LastRow
+        ' Verificar se o valor da célula tem 9 caracteres ou menos
+        If Len(ws.Cells(i, 1).Value) <= 9 Then
+            ' Preencher as células de B até M com "X"
+            ws.Range(ws.Cells(i, 2), ws.Cells(i, 13)).Value = "X"
+        End If
+    Next i
+    
+    MsgBox "Processo concluído!"
+End Sub
